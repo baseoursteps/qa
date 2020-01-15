@@ -1,3 +1,13 @@
+## Contents
+
+* [Operating Systems](#operating-systems)
+* [Algorithms](#algorithms)
+* [C/C++](#c/c++)
+    * [Code Review](#code-review)
+* [Networking](#networking)
+
+
+
 ## Operating systems
 
 * What happens when you `cat` a file in the terminal
@@ -6,7 +16,7 @@
     * Kernel I/O
     * Deffered work
     * TTY Driver
-    
+
 * [Cache Coherency](https://en.wikipedia.org/wiki/Cache_coherence)
     > In computer architecture, cache coherence is the uniformity of shared resource data that ends up stored in multiple local caches. When clients in a system maintain caches of a common memory resource, problems may arise with incoherent data, which is particularly the case with CPUs in a multiprocessing system.
 * [Virtual Memory](https://bottomupcs.com/chapter05.xhtml)
@@ -39,6 +49,7 @@
     * for `poll` you have to enumerate and check all the descriptors for their state.
 
 
+
 ## Algorithms
 
 * [Reverse a singly linked-list in place.](https://www.geeksforgeeks.org/reverse-a-linked-list/)
@@ -47,26 +58,26 @@
     and the stack is empty at the end.
 * Consumer Producer Problem
 ```
-	semaphore empty_s = 10;
-	semaphore full_s  =  0;
-	semaphore lock    =  1;
-	
-	producer() {
-	    item = Produce();
-	    down(empty_s);
-	    down(lock);
-	    putItemInQueue(item);
-	    up(lock);
-	    up(full_s);
-	}
-	
-	consumer() {
-	    down(full_s);
-	    down(lock);
-	    item = getItemFromQueue();
-	    up(lock);
-	    up(empty_s);
-	}
+semaphore empty_s = 10;
+semaphore full_s  =  0;
+semaphore lock    =  1;
+
+producer() {
+  item = Produce();
+  down(empty_s);
+  down(lock);
+  putItemInQueue(item);
+  up(lock);
+  up(full_s);
+}
+
+consumer() {
+  down(full_s);
+  down(lock);
+  item = getItemFromQueue();
+  up(lock);
+  up(empty_s);
+}
 ```
 
 * Stack-like data structure that keeps that also has a `getMin()` method. 
@@ -86,49 +97,51 @@
 integers that sum up to 0. The function can return any such array. For example, given N=4, the 
 function could return {1, 0, -3, 2} or {-2, 1, -4, 5}, but not {1, -1, 1, 3}.](https://www.techiedelight.com/find-subarrays-given-sum-array/)
 
+
+
 ## C/C++
 
 * Implement a unique pointer in C++.
 ```
-	template<typename T>
-	class uniq;
-	
-	template<typename T>
-	uniq<T>
-	make_uniq(T elem);
-	
-	template<typename T>
-	class uniq
-	{
-	
-	public:
-	  uniq<T>()
-	    : _elem(nullptr){
-	
-	    };
-	  uniq<T>(const uniq<T>& other) = delete;
-	  uniq<T>(uniq<T>&& other)
-	  {
-	    this->_elem = other._elem;
-	    other._elem = nullptr;
-	  }
-	
-	  ~uniq() { delete _elem; }
-	
-	  friend uniq<T> make_uniq<>(T elem);
-	
-	private:
-	  T* _elem;
-	};
-	
-	template<typename T>
-	uniq<T>
-	make_uniq(T elem)
-	{
-	  uniq<T> a;
-	  a._elem = new T(elem);
-	  return a;
-	}
+template<typename T>
+class uniq;
+
+template<typename T>
+uniq<T>
+make_uniq(T elem);
+
+template<typename T>
+class uniq
+{
+
+public:
+  uniq<T>()
+    : _elem(nullptr){
+
+    };
+  uniq<T>(const uniq<T>& other) = delete;
+  uniq<T>(uniq<T>&& other)
+  {
+    this->_elem = other._elem;
+    other._elem = nullptr;
+  }
+
+  ~uniq() { delete _elem; }
+
+  friend uniq<T> make_uniq<>(T elem);
+
+private:
+  T* _elem;
+};
+
+template<typename T>
+uniq<T>
+make_uniq(T elem)
+{
+  uniq<T> a;
+  a._elem = new T(elem);
+  return a;
+}
 ```
 
 * What are the differences between `std::map` and `std::unordered_map`?
@@ -145,116 +158,117 @@ function could return {1, 0, -3, 2} or {-2, 1, -4, 5}, but not {1, -1, 1, 3}.](h
 
 * Implement a singly-linked list with add/delete/contains.
 ```
-	template<typename T>
-	class Listy
-	{
-	  T _elem;
-	  Listy<T>* _next;
-	
-	public:
-	  Listy<T>(const Listy<T>& other) = delete;
-	
-	  Listy<T>& operator=(const Listy<T>& other) = delete;
-	
-	  Listy<T>()
-	    : _elem()
-	    , _next(nullptr)
-	  {}
-	
-	  ~Listy()
-	  {
-	    if (_next) {
-	      auto i = _next;
-	      while (i) {
-	        auto d = i->_next;
-	        i->_next = nullptr;
-	        delete i;
-	        i = d;
-	      }
-	    }
-	  }
-	
-	  void add(T elem)
-	  {
-	    auto* n = new Listy<T>();
-	    n->_elem = elem;
-	    n->_next = _next;
-	    _next = n;
-	  }
-	
-	  bool contains(T elem)
-	  {
-	    if (!_next) {
-	      return false;
-	    }
-	    for (auto i = _next; i; i = i->_next) {
-	      if (i->_elem == elem) {
-	        return true;
-	      }
-	    }
-	    return false;
-	  }
-	
-	  bool remove(T elem)
-	  {
-	    if (!_next) {
-	      return false;
-	    }
-	
-	    if (_next->_elem == elem) {
-	      auto curr = _next;
-	      _next = curr->_next;
-	      curr->_next = nullptr;
-	      delete curr;
-	      return true;
-	    }
-	
-	    auto it = _next;
-	    while (it->_next && it->_next->_elem != elem) {
-	      it = it->_next;
-	    }
-	
-	    if (!it->_next) {
-	      return false;
-	    } else {
-	      auto next = it->_next;
-	      it->_next = next->_next;
-	      next->_next = nullptr;
-	      delete next;
-	      return true;
-	    }
-	  }
-	};
+template<typename T>
+class Listy
+{
+  T _elem;
+  Listy<T>* _next;
+
+public:
+  Listy<T>(const Listy<T>& other) = delete;
+
+  Listy<T>& operator=(const Listy<T>& other) = delete;
+
+  Listy<T>()
+    : _elem()
+    , _next(nullptr)
+  {}
+
+  ~Listy()
+  {
+    if (_next) {
+      auto i = _next;
+      while (i) {
+        auto d = i->_next;
+        i->_next = nullptr;
+        delete i;
+        i = d;
+      }
+    }
+  }
+
+  void add(T elem)
+  {
+    auto* n = new Listy<T>();
+    n->_elem = elem;
+    n->_next = _next;
+    _next = n;
+  }
+
+  bool contains(T elem)
+  {
+    if (!_next) {
+      return false;
+    }
+    for (auto i = _next; i; i = i->_next) {
+      if (i->_elem == elem) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool remove(T elem)
+  {
+    if (!_next) {
+      return false;
+    }
+
+    if (_next->_elem == elem) {
+      auto curr = _next;
+      _next = curr->_next;
+      curr->_next = nullptr;
+      delete curr;
+      return true;
+    }
+
+    auto it = _next;
+    while (it->_next && it->_next->_elem != elem) {
+      it = it->_next;
+    }
+
+    if (!it->_next) {
+      return false;
+    } else {
+      auto next = it->_next;
+      it->_next = next->_next;
+      next->_next = nullptr;
+      delete next;
+      return true;
+    }
+  }
+};
 ```
 
 * [Diamond inheritance problem](https://www.cprogramming.com/tutorial/virtual_inheritance.html)
 ```
-	struct Base
-	{
-	  virtual void deadmaus() {}
-	};
-	
-	struct Drop : public Base
-	{
-	  virtual void deadmaus() override {}
-	};
-	
-	struct The : public Base
-	{
-	  virtual void deadmaus() override {}
-	};
-	
-	struct Skrillex
-	  : public Drop
-	  , public The
-	{};
-	
-	int
-	main()
-	{
-	  Skrillex bangarang;
-	  bangarang.deadmaus();
-	}
+
+struct Skrillex
+{
+  virtual void deadmaus() {}
+};
+
+struct The : public Skrillex
+{
+  virtual void deadmaus() override {}
+};
+
+struct Base : public Skrillex
+{
+  virtual void deadmaus() override {}
+};
+
+struct Drop
+  : public The
+  , public Base
+{};
+
+int
+main()
+{
+  Drop base;
+  base.deadmaus();
+}
 ```
 
 Fix it by inheriting virtually.
@@ -263,17 +277,17 @@ Fix it by inheriting virtually.
 * [Polymorphic behaviour - Inheritance vs Composition](https://en.wikipedia.org/wiki/Composition_over_inheritance)
 
 ```
-	struct Ram
-	{};
-	
-	struct Computer
-	{};
-	
-	// Smartphone `is-a` Computer, and `has-a` Ram.
-	struct Smartphone : public Computer
-	{
-	  Ram r;
-	};
+struct Ram
+{};
+
+struct Computer
+{};
+
+// Smartphone `is-a` Computer, and `has-a` Ram.
+struct Smartphone : public Computer
+{
+  Ram r;
+};
 ```
 
 * Pointer arithmethic
@@ -281,12 +295,12 @@ Fix it by inheriting virtually.
 
 * Callback mechanism in C
 ```
-	typedef int (*my_cool_callback)(void* ctx);
-	int register_callback(int event, my_cool_callback f, void* contex);
+typedef int (*my_cool_callback)(void* ctx);
+int register_callback(int event, my_cool_callback f, void* contex);
 ```
 
 * [Near, Far, Huge Pointers](https://en.wikipedia.org/wiki/Intel_Memory_Model)
-    * Near pointers 
+    * Near pointers
     > are 16-bit offsets within the reference segment, i.e. DS for data and CS for code. They are the fastest pointers, but are limited to point to 64 KB of memory (to the associated segment of the data type). Near pointers can be held in registers (typically SI and DI).
     * Far pointers
     > are 32-bit pointers containing a segment and an offset. To use them the segment register ES is used by using the instruction les [reg]|[mem],dword [mem]|[reg]. They may reference up to 1024 KiB of memory. Note that pointer arithmetic (addition and subtraction) does not modify the segment portion of the pointer, only its offset. Operations which exceed the bounds of zero or 65535 (0xFFFF) will undergo modulo 64K operation just as any normal 16-bit operation. The moment counter becomes (0x10000), the resulting absolute address will roll over to 0x5000:0000.
@@ -296,44 +310,52 @@ Fix it by inheriting virtually.
 * Is it legal for a method to call `delete this;`?
     * Valid if object was created using `new`.
     * Undefined otherwise.
-    
+
 * What is the order for evaluating function arguments in C++?
     * Unspecified
 
 * Memory leak using smart pointers
 ```
-	auto ptr = std::make_unique<int>(10);
-	auto raw = ptr.release();
+auto ptr = std::make_unique<int>(10);
+auto raw = ptr.release();
 ```
+
 
 ### Code review
 
 ```
-	#include "defs.h"
-	#include <stdio.h>
-	
-	const char *inet_ntoa(uint32_t ip) {
-	
-	  char buffer[IPV4_STR_SIZE];
-	
-	  if (ip == 0) {
-	    return "0.0.0.0";
-	  }
-	
-	  char *b = &ip;
-	
-	  snprintf(buffer, sizeof(buffer), "%u %u %u %u", b[0], b[1], b[2],
-	           b[3]); // Endianness issues.
-	
-	  return buffer; // Returning a buffer declared on the stack.
-	}
+#include "defs.h"
+#include <stdio.h>
+
+const char*
+inet_ntoa(uint32_t ip)
+{
+
+  char buffer[IPV4_STR_SIZE];
+
+  if (ip == 0) {
+    return "0.0.0.0";
+  }
+
+  char* b = &ip;
+
+  snprintf(buffer,
+           sizeof(buffer),
+           "%u %u %u %u",
+           b[0],
+           b[1],
+           b[2],
+           b[3]); // Endianness issues.
+
+  return buffer; // Returning a buffer declared on the stack.
+}
 ```
 * What size does `IPV4_STR_SIZE` need to have?
     * 16
 * What does it mean for a variable to be declared `static` in a function?
     * Defined in the `bss` or `data` sections of the elf.
     * Only one instance of the buffer regardless of many threads call the function.
-* If the buffer was declared `static` would the function be thread-safe? 
+* If the buffer was declared `static` would the function be thread-safe?
     * No
 * What are the differences between `static` and `global`?
     * `static` specifies that a variable is declared in `.bss`, doesn't have
@@ -347,7 +369,7 @@ you accomplish that?
     * Keep an array of 10 buffers, hash each thread upon function entry by thread id,
     and use corresponding buffer.
 
-----
+
 
 ## Networking
 
@@ -376,4 +398,3 @@ you accomplish that?
 [Linux RIB]: https://vincent.bernat.ch/en/blog/2017-ipv4-route-lookup-linux
 [FreeBSD RIB]: https://www.openbsd.org/papers/eurobsdcon2016-embracingbsdrt.pdf
 [Using `epoll`]: https://bitbucket.org/rhadamanthus/vulny/src/e7bfc11780030d736ac2d7c766a50d7b4fdd9f6d/lib/async_io.cc#lines-138
-
