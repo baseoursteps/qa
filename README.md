@@ -54,7 +54,9 @@
     * `epoll` is Linux specific and returns only the descriptors that are ready.
     * for `poll` you have to enumerate and check all the descriptors for their state.
 
-
+* [What is DMA?](https://docs.freebsd.org/doc/2.1.5-RELEASE/usr/share/doc/handbook/handbook245.html)
+    >Direct Memory Access (DMA) is a method of allowing data to be moved from one location to another in a computer without intervention from the central processor (CPU).
+    * A MCU can map peripherals' registers to the address space in order to communicate directlty.
 
 ## Algorithms
 
@@ -107,6 +109,9 @@ consumer() {
 integers that sum up to 0. The function can return any such array. For example, given N=4, the 
 function could return {1, 0, -3, 2} or {-2, 1, -4, 5}, but not {1, -1, 1, 3}.](https://www.techiedelight.com/find-subarrays-given-sum-array/) 
 (Amazon)
+
+* [Add two numbers without using arithmetic operators](https://www.geeksforgeeks.org/add-two-numbers-without-using-arithmetic-operators/) 
+(Luxoft)
 
 
 
