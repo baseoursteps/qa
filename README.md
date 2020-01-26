@@ -19,36 +19,47 @@
 
 * [Cache Coherency](https://en.wikipedia.org/wiki/Cache_coherence) (Amazon)
     > In computer architecture, cache coherence is the uniformity of shared resource data that ends up stored in multiple local caches. When clients in a system maintain caches of a common memory resource, problems may arise with incoherent data, which is particularly the case with CPUs in a multiprocessing system.
+
 * [Virtual Memory](https://bottomupcs.com/chapter05.xhtml)
     > Virtual memory is all about making use of address space.
     > The address space of a processor refers the range of possible addresses that it can use when loading and storing to memory. The address space is limited by the width of the registers, since as we know to load an address we need to issue a load instruction with the address to load from stored in a register. For example, registers that are 32 bits wide can hold addresses in a register range from 0x00000000 to 0xFFFFFFF. 2^32 is equal to 4GB, so a 32 bit processor can load or store to up to 4GB of memory.
+
 * [TLB/MMU](https://bottomupcs.com/virtual_memory_hardware.xhtml#the_tlb)
   > The Translation Lookaside Buffer (or TLB for short) is the main component of the processor responsible for virtual-memory. It is a cache of virtual-page to physical-frame translations inside the processor. The operating system and hardware work together to manage the TLB as the system runs.
+
 * [Interrupts/ISR](https://bottomupcs.com/peripherals.xhtml) (Tremend/NXP)
   > An interrupt allows the device to literally interrupt the processor to flag some information. For example, when a key is pressed, an interrupt is generated to deliver the key-press event to the operating system. Each device is assigned an interrupt by some combination of the operating system and BIOS.
+
 * [What happens when you `fork`](https://bottomupcs.com/fork_and_exec.xhtml#d0e5739) 
 (Intel)
     * Given the next snippet describe what happens. The printf gets called twice because 
     the unflushed output buffer is inherited upon fork and flushed on exit. 
     (Luxoft)
+
     ```
     printf("Hello");
     fork();
     ```
+
 * [CPU Scheduling strategies](https://bottomupcs.com/scheduling.xhtml) (Luxoft)
+
 * [Process states](https://media.geeksforgeeks.org/wp-content/uploads/transitions.jpg) 
 (Luxoft)
+
 * Can you have global data specific to a thread? (Luxoft)
     * [Thread Local Storage](https://en.wikipedia.org/wiki/Thread-local_storage)
 * Thread-Safe vs Reentrant (Luxoft)
     * Generally, thread-safe refers to access/modification of data from different threads e.g. `vector::push_back()`.
     * Functions with respect to instances running on multiples threads can be reentrant or not e.g. `strtok`.
+
 * [How does a SW breakpoint work?](http://man7.org/linux/man-pages/man2/ptrace.2.html) 
 (Luxoft)
     * The tracer attaches to the tracee via trap, halts the execution, reinserts the trap and continues. - `man 2 ptrace`
+
 * What is a busy loop? Why is it bad? What are the alternatives? (Tellence)
     * `while(read(fd, buff, sizeof buff,0 ) > 0) { // Do stuff  }`
     * `poll`, `epoll`, `select`
+
 * Difference between [`poll`](https://linux.die.net/man/2/poll) and [`epoll`](https://linux.die.net/man/4/epoll)? 
 (Tellence)
     * `epoll` is Linux specific and returns only the descriptors that are ready.
@@ -58,15 +69,39 @@
     >Direct Memory Access (DMA) is a method of allowing data to be moved from one location to another in a computer without intervention from the central processor (CPU).
     * A MCU can map peripherals' registers to the address space in order to communicate directlty.
 
+* Whats is the general structure of kernel module that registers a character device? (NXP)
+    * allocate device entry `alloc_chrdev_region`
+    * bind device to file operations `cdev_init`
+    * add your character device to the dev tree `cdev_add`
+    * in userspace call `mknod` to actually create the device in `/dev/`
+
+* Whenever we `read`/`write`/`seek` a device what is being called in the kernel? (NXP)
+    * [VFS(Virtual File System)](https://elixir.bootlin.com/linux/v5.4.14/source/include/linux/fs.h#L1821)
+
+* If you dereference a pointer in kernel is that address virtual or physical? (NXP)
+    * Virtual
+
+* Can you get - and if yes, how - the actual physical address from a virtual one? (NXP)
+    * Yes, [`virt_to_phys`](https://elixir.bootlin.com/linux/latest/source/include/asm-generic/io.h).
+    * NOTE - if you try to dereference it the kernel still treats it as virtual.
+
+* Can someone write directly at a physical address? If yes, how? (NXP)
+    * First that memory region mustn't be managed by the kernel.
+    * We must remap that physical address into virtual space using [`ioremap`](https://elixir.bootlin.com/linux/latest/source/arch/x86/include/asm/io.h).
+
+
 ## Algorithms
 
 * [Reverse a singly linked-list in place.](https://www.geeksforgeeks.org/reverse-a-linked-list/) 
 (Bitdefender)
+
 * Given a sequence of brackets, determine if they're closed correctly 
 (Bitdefender)
     * Push open brackets on a stack and start poping on closing brackets. Check if they match
     and the stack is empty at the end.
+
 * Consumer Producer Problem (Bitdefender)
+
 ```
 semaphore empty_s = 10;
 semaphore full_s  =  0;
@@ -94,15 +129,17 @@ consumer() {
 (Tellence)
     * [Keep two stacks](https://www.geeksforgeeks.org/tracking-current-maximum-element-in-a-stack/)
     * Or have a single stack that holds a tuple <element, current minimum>.
+
 ```
     std::deque<std::tuple<int, int>> stacky; // The first element is the actual value, the second is the current minimum.
 ```
 
 * Given an array, return the indexes of two members that add up to a given sum (if present) 
 (NXP/Ixia)
+
 ```
-    map[value_from_array] = index_of_value_from array;
-    map.find(sum - some_other_value_from_array);
+map[value_from_array] = index_of_value_from array;
+map.find(sum - some_other_value_from_array);
 ```
 
 * [Implement a function that, given an integer N (1<N<100), returns an array containing N unique 
@@ -113,11 +150,19 @@ function could return {1, 0, -3, 2} or {-2, 1, -4, 5}, but not {1, -1, 1, 3}.](h
 * [Add two numbers without using arithmetic operators](https://www.geeksforgeeks.org/add-two-numbers-without-using-arithmetic-operators/) 
 (Luxoft)
 
-
+* You have eight balls, all being of equal weight, besides one. 
+Find the different one using a minimum number of comparisons.
+    * Split three/three/two.
+    * Compare three with three.
+        * If equal, compare remaining two.
+        * If unequal, take two from the particular group and compare them.
+            * If equal, the remaining one is the different ball.
+            * If not, one of the two is the different.
 
 ## C/C++
 
 * Implement a unique pointer in C++. (Ixia)
+
 ```
 template<typename T>
 class uniq;
@@ -165,6 +210,7 @@ make_uniq(T elem)
     * Like the names imply `std::map`'s keys are ordered using `operator<()`.
     * `std::map` is implemented using [Red-Black tree](https://www.cs.auckland.ac.nz/software/AlgAnim/red_black.html).
     * `std::unordered_map` is implemented usign [Hash Map](https://en.wikipedia.org/wiki/Hash_table).
+
     ```
             Hash Table    Balanced BST
     Space     O(n)             O(n)
@@ -174,6 +220,7 @@ make_uniq(T elem)
     ```
 
 * Implement a singly-linked list with add/delete/contains.(Ixia)
+
 ```
 template<typename T>
 class Listy
@@ -259,6 +306,7 @@ public:
 
 * [Diamond inheritance problem](https://www.cprogramming.com/tutorial/virtual_inheritance.html) 
 (Bitdefender/Ixia/Viavi)
+
 ```
 
 struct Skrillex
@@ -314,6 +362,7 @@ struct Smartphone : public Computer
         * `0 + sizeof(*a) = 4`
 
 * Callback mechanism in C (Luxoft)
+
 ```
 typedef int (*my_cool_callback)(void* ctx);
 int register_callback(int event, my_cool_callback f, void* contex);
@@ -336,6 +385,7 @@ int register_callback(int event, my_cool_callback f, void* contex);
     * Unspecified
 
 * Memory leak using smart pointers (Luxoft)
+
 ```
 auto ptr = std::make_unique<int>(10);
 auto raw = ptr.release();
@@ -345,6 +395,7 @@ auto raw = ptr.release();
 ### Code review
 
 * Tellence
+
 ```
 #include "defs.h"
 #include <stdio.h>
@@ -372,6 +423,7 @@ inet_ntoa(uint32_t ip)
   return buffer; // Returning a buffer declared on the stack.
 }
 ```
+
 * What size does `IPV4_STR_SIZE` need to have?
     * 16
 * What does it mean for a variable to be declared `static` in a function?
@@ -412,6 +464,7 @@ you accomplish that?
         routes of same metric.
     * How would you implement a hashing algorithm for ECMP?
         * `(src_mac ^ dst_mac + src_ip ^ dst_ip) % no_of_routes`
+
 * [OSPF] (Tellence)
     * Link state routing protocol, Djikstra algorithm, uses IP
     * Uses areas for hierarchical routing, Seven LSA types for IPv4, 
