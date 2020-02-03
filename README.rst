@@ -117,8 +117,8 @@ Operating Systems
 
 * Can someone write directly at a physical address? If yes, how? (NXP)
 
-    * First that memory region mustn't be managed by the kernel.
-    * We must remap that physical address into virtual space using `ioremap <https://elixir.bootlin.com/linux/latest/source/arch/x86/include/asm/io.h>`_.
+  * First that memory region mustn't be managed by the kernel.
+  * We must remap that physical address into virtual space using `ioremap <https://elixir.bootlin.com/linux/latest/source/arch/x86/include/asm/io.h>`_.
 
 
 Algorithms
@@ -416,15 +416,17 @@ C/C++
 * `Near, Far, Huge Pointers <https://en.wikipedia.org/wiki/Intel_Memory_Model>`_ 
   (Luxoft)
 
-   * Near pointers
+  * Near pointers
 
-     > are 16-bit offsets within the reference segment, i.e. DS for data and CS for code. They are the fastest pointers, but are limited to point to 64 KB of memory (to the associated segment of the data type). Near pointers can be held in registers (typically SI and DI).
-   * Far pointers
+    > are 16-bit offsets within the reference segment, i.e. DS for data and CS for code. They are the fastest pointers, but are limited to point to 64 KB of memory (to the associated segment of the data type). Near pointers can be held in registers (typically SI and DI).
 
-     > are 32-bit pointers containing a segment and an offset. To use them the segment register ES is used by using the instruction les [reg]|[mem],dword [mem]|[reg]. They may reference up to 1024 KiB of memory. Note that pointer arithmetic (addition and subtraction) does not modify the segment portion of the pointer, only its offset. Operations which exceed the bounds of zero or 65535 (0xFFFF) will undergo modulo 64K operation just as any normal 16-bit operation. The moment counter becomes (0x10000), the resulting absolute address will roll over to 0x5000:0000.
-   * Huge Pointers
+  * Far pointers
 
-     > are essentially far pointers, but are (mostly) normalized every time they are modified so that they have the highest possible segment for that address. This is very slow but allows the pointer to point to multiple segments, and allows for accurate pointer comparisons, as if the platform were a flat memory model: It forbids the aliasing of memory as described above, so two huge pointers that reference the same memory location are always equal.
+    > are 32-bit pointers containing a segment and an offset. To use them the segment register ES is used by using the instruction les [reg]|[mem],dword [mem]|[reg]. They may reference up to 1024 KiB of memory. Note that pointer arithmetic (addition and subtraction) does not modify the segment portion of the pointer, only its offset. Operations which exceed the bounds of zero or 65535 (0xFFFF) will undergo modulo 64K operation just as any normal 16-bit operation. The moment counter becomes (0x10000), the resulting absolute address will roll over to 0x5000:0000.
+
+  * Huge Pointers
+
+    > are essentially far pointers, but are (mostly) normalized every time they are modified so that they have the highest possible segment for that address. This is very slow but allows the pointer to point to multiple segments, and allows for accurate pointer comparisons, as if the platform were a flat memory model: It forbids the aliasing of memory as described above, so two huge pointers that reference the same memory location are always equal.
 
 * Is it legal for a method to call ``delete this;``? (Luxoft)
 
