@@ -397,6 +397,34 @@ C/C++
        Ram r;
      };
 
+* Write a function that correctly sums up all elements in an array. (Tremend)
+
+  .. code-block:: c
+
+     int_least64_t
+     do_sum(size_t sz, int arr[sz])
+     {
+       if (!(arr && sz)) {
+         return 0;
+       }
+       int_least64_t sum = 0;
+       for (size_t i = 0; i < sz; i++) {
+         const int_least64_t val = arr[i];
+         if (val > 0) {
+           if (INT_LEAST64_MAX - val < sum) {
+             errno = ERANGE;
+             break;
+           }
+         } else if (val < 0) {
+           if (INT_LEAST64_MIN + val > sum) {
+             errno = ERANGE;
+             break;
+           }
+         }
+         sum += val;
+       }
+       return sum;
+     }
 
 * Pointer arithmethic (Luxoft/NXP)
 
@@ -447,6 +475,34 @@ C/C++
 
 Code Review
 ===========
+
+* Tremend
+
+  .. code-block:: c
+
+     int
+     square(volatile int* val)
+     {
+       return *val * *val;
+     }
+
+  * In case of an interrupt happening while dereferencing ``*val`` and
+    modifying its value we could be using two different values.
+
+    * dereference only once in a temporary and square that.
+    * alter the prototype to accept a value, not a pointer.
+
+  .. code-block:: c
+
+     uint8_t
+     f(uint8_t val)
+     {
+       if (val >= 128) {
+         return val - 128;
+       }
+     }
+
+  * We can optimize it by doing ``val &= ~(1 << 8)``.
 
 * Tellence
 
