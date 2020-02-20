@@ -626,7 +626,43 @@ C/C++
        funky(std::move(s)); // s is rval& => T = SomeStruct&& / t = SomeStruct&& &&
      }
 
+* What's the meaning of const keyword at the end of a function? (Luxoft - Harman)
 
+  A const function, denoted with the keyword ``const`` after a function
+  declaration, makes it a compiler error for this class function to
+  change a member variable of the class.
+  However, reading of a class variables is okay inside of the function,
+  but writing inside of this function will generate a compiler error.
+
+* What's the output of this ?  (Luxoft - Harman)
+
+  .. code-block:: cpp
+
+     std::cout << 25u - 50;
+
+  *  2^32 - 25
+
+     * The expression causes an *integer wraparound* when we try to subtract
+       a number from an unsigned of value zero, practically obtaining
+       ``UNSIGNED_MAX - value``.
+
+* How many times will this loop execute?  (Luxoft - Harman)
+
+  .. code-block:: cpp
+
+     unsigned char half_limit = 150;
+     for (unsigned char i = 0; i < 2 * half_limit; ++i)
+     {
+      // do smth
+     }
+
+  * This code will result in an infinite loop.
+
+    * The expression ``2 * half_limit`` will get promoted to an ``int``
+      (based on C++ conversion rules) and will have a value of 300.
+      However, since ``i`` is an unsigned char, it is represented by an 8-bit
+      value which, after reaching 255, will overflow (so it will go back to 0)
+      and the loop will therefore go on forever.
 
 Code Review
 ===========
