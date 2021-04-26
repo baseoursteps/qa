@@ -12,6 +12,13 @@ Contents
 Operating Systems
 =================
 
+* Do threads have their own stack and why? (Ixia)
+
+    Yes. The stack of each thread contains particular automatic lifetime data
+    which is exclusively relevant for methods in a thread's workflow.
+    Each function has its own arguments and return addresses which are specific
+    to the work of a thread.
+
 * What happens when you ``cat`` a file in the terminal? (Amazon)
 
   * Say the syscalls printed by ``strace``
@@ -22,43 +29,43 @@ Operating Systems
 
 * `Cache Coherency <https://en.wikipedia.org/wiki/Cache_coherence>`_ (Amazon)
 
-  > In computer architecture, cache coherence is the uniformity of
-  shared resource data that ends up stored in multiple local caches.
-  When clients in a system maintain caches of a common memory resource,
-  problems may arise with incoherent data, which is particularly the case
-  with CPUs in a multiprocessing system.
+    In computer architecture, cache coherence is the uniformity of
+    shared resource data that ends up stored in multiple local caches.
+    When clients in a system maintain caches of a common memory resource,
+    problems may arise with incoherent data, which is particularly the case
+    with CPUs in a multiprocessing system.
 
 * `Virtual Memory <https://bottomupcs.com/chapter05.xhtml>`_
 
-  > Virtual memory is all about making use of address space.
+    Virtual memory is all about making use of address space.
 
-  > The address space of a processor refers the range of possible addresses
-  that it can use when loading and storing to memory.
-  The address space is limited by the width of the registers, since as we know
-  to load an address we need to issue a load instruction with the address to
-  load from stored in a register.
-  For example, registers that are 32 bits wide can hold addresses in a
-  register range from 0x00000000 to 0xFFFFFFF.
-  2^32 is equal to 4GB, so a 32 bit processor can load or store to
-  up to 4GB of memory.
+    The address space of a processor refers the range of possible addresses
+    that it can use when loading and storing to memory.
+    The address space is limited by the width of the registers, since as we know
+    to load an address we need to issue a load instruction with the address to
+    load from stored in a register.
+    For example, registers that are 32 bits wide can hold addresses in a
+    register range from 0x00000000 to 0xFFFFFFF.
+    2^32 is equal to 4GB, so a 32 bit processor can load or store to
+    up to 4GB of memory.
 
 * `TLB/MMU <https://bottomupcs.com/virtual_memory_hardware.xhtml#the_tlb>`_
 
-  > The Translation Lookaside Buffer (or TLB for short) is the main component
-  of the processor responsible for virtual-memory.
-  It is a cache of virtual-page to physical-frame translations inside the
-  processor.
-  The operating system and hardware work together to manage
-  the TLB as the system runs.
+    The Translation Lookaside Buffer (or TLB for short) is the main component
+    of the processor responsible for virtual-memory.
+    It is a cache of virtual-page to physical-frame translations inside the
+    processor.
+    The operating system and hardware work together to manage
+    the TLB as the system runs.
 
 * `Interrupts/ISR <https://bottomupcs.com/peripherals.xhtml>`_ (Tremend/NXP)
 
-  > An interrupt allows the device to literally interrupt the processor to
-  flag some information.
-  For example, when a key is pressed, an interrupt is generated to deliver
-  the key-press event to the operating system.
-  Each device is assigned an interrupt by some combination of the operating
-  system and BIOS.
+    An interrupt allows the device to literally interrupt the processor to
+    flag some information.
+    For example, when a key is pressed, an interrupt is generated to deliver
+    the key-press event to the operating system.
+    Each device is assigned an interrupt by some combination of the operating
+    system and BIOS.
 
 * `What happens when you fork?
   <https://bottomupcs.com/fork_and_exec.xhtml#d0e5739>`_ (Intel)
@@ -67,10 +74,10 @@ Operating Systems
     The ``printf`` string appears twice because the unflushed output buffer
     is inherited upon fork and flushed on exit. (Luxoft)
 
-  .. code-block:: c
+    .. code-block:: c
 
-     printf("Hello");
-     fork();
+       printf("Hello");
+       fork();
 
 * `CPU Scheduling strategies <https://bottomupcs.com/scheduling.xhtml>`_
   (Luxoft)
@@ -82,6 +89,7 @@ Operating Systems
 * Can you have global data specific to a thread? (Luxoft)
 
   * `Thread Local Storage <https://en.wikipedia.org/wiki/Thread-local_storage>`_
+
 * Thread-Safe vs Reentrant (Luxoft)
 
   * Generally, thread-safe refers to access/modification of data from
@@ -99,6 +107,7 @@ Operating Systems
 * What is a busy loop? Why is it bad? What are the alternatives? (Tellence)
 
   * ``while(read(fd, buff, sizeof buff,0 ) > 0) { /* Do stuff */  }``
+
   * ``poll``, ``epoll``, ``select``
 
 * Difference between `poll <https://linux.die.net/man/2/poll>`_
@@ -106,6 +115,7 @@ Operating Systems
   (Tellence/Societe Generale) ?
 
   * ``epoll`` is Linux specific and returns only the descriptors that are ready.
+
   * for ``poll`` you have to enumerate and check all the descriptors
     for their state.
 
@@ -117,15 +127,16 @@ Operating Systems
     * Edge triggering means that epoll will notify of IO only once.
       If we do *some* of that IO, but not finish it, ``epoll`` will block
       until another descriptor becomes ready.
+
     * Level triggering implies the oposite i.e. as long as there ready
       IO operations ``epoll`` will notify us.
 
 * What is `DMA
   <https://docs.freebsd.org/doc/2.1.5-RELEASE/usr/share/doc/handbook/handbook245.html>`_?
 
-  > Direct Memory Access (DMA) is a method of allowing data to be moved from
-  one location to another in a computer without intervention
-  from the central processor (CPU).
+    Direct Memory Access (DMA) is a method of allowing data to be moved from
+    one location to another in a computer without intervention
+    from the central processor (CPU).
 
   * A MCU can map peripherals' registers to the address space
     in order to communicate directlty.
@@ -134,11 +145,11 @@ Operating Systems
 
   * ``man 7 signal-safety``
 
-    > An async-signal-safe function is one that can be safely called from
-    within a signal handler.
-    Many functions are not async-signal-safe.
-    In particular, nonreentrant functions are generally unsafe to call
-    from a signal handler.
+      An async-signal-safe function is one that can be safely called from
+      within a signal handler.
+      Many functions are not async-signal-safe.
+      In particular, nonreentrant functions are generally unsafe to call
+      from a signal handler.
 
   * Reentrant, Non-blocking
 
@@ -179,7 +190,7 @@ Operating Systems
 Algorithms
 ==========
 
-* Remove all the odd numbers from a vector in place O(N).(Societe Generale)
+* Remove all the odd numbers from a vector in place O(N). (Societe Generale)
 
   .. code-block:: cpp
 
@@ -304,54 +315,105 @@ Algorithms
 C/C++
 =====
 
+* Can a virtual function be called from a constructor? (Ixia)
+
+    The virtual call mechanism is disabled in constructors and destructors.
+
+    Typically calling virtuals from ctors and dtors is not recommended because
+    it does not yield the expected behaviour.
+
+    Derived classes are constructed from the first derived class in chain to the
+    last one. The problem is that when the first class is constructed its
+    `vtable` cannot point to overridden methods from classes which have not been
+    created.
+
+* Can you throw an exception from a destructor? (Ixia)
+
+    Before C++11 it was possible to do it, but there were high risks of triggering
+    an abort. If a random exception was triggered at runtime and during stack
+    unwinding an object would throw an exception from its destructor there would
+    be no `catch` block to handle this error, thus generating an abort.
+
+    Starting with C++11 all destructors are implictly declared as `noexcept`,
+    automatically trigerring an abort.
+
+* Write a method that returns incremental `int` values without taking arguments.
+  (Ixia)
+
+  .. code-block:: cpp
+
+     int
+     generator()
+     {
+       static std::atomic<int> gen;
+       return gen++;
+     }
+
 * Differences between ``unique_ptr`` and ``shared_ptr``.
 
   * Besides the obvious name implications...
+
   * ``unique_ptr`` cannot be copied, only moved
 
 * Implement a unique pointer in C++. (Ixia)
 
   .. code-block:: cpp
 
-      template<typename T>
-      class uniq;
+     template<typename T>
+     class uniq;
 
-      template<typename T>
-      uniq<T>
-      make_uniq(T elem);
+     template<typename T>
+     uniq<T>
+     make_uniq(T elem);
 
-      template<typename T>
-      class uniq
-      {
+     template<typename T>
+     class uniq
+     {
 
-      public:
-        uniq<T>()
-          : _elem(nullptr){
+     public:
+       uniq<T>()
+         : _elem(nullptr){
 
-          };
-        uniq<T>(const uniq<T>& other) = delete;
-        uniq<T>(uniq<T>&& other)
-        {
-          this->_elem = other._elem;
-          other._elem = nullptr;
-        }
+         };
 
-        ~uniq() { delete _elem; }
+       uniq<T>& operator=(uniq<T>&& other)
+       {
+         this->_elem = other._elem;
+         other._elem = nullptr;
+         return *this;
+       }
 
-        friend uniq<T> make_uniq<>(T elem);
+       uniq<T>(uniq<T>&& other)
+       {
+         this->_elem = other._elem;
+         other._elem = nullptr;
+       }
 
-      private:
-        T* _elem;
-      };
+       const T& operator*() const { return *_elem; }
 
-      template<typename T>
-      uniq<T>
-      make_uniq(T elem)
-      {
-        uniq<T> a;
-        a._elem = new T(elem);
-        return a;
-      }
+       const T* operator->() const { return _elem; }
+
+       uniq<T>(const uniq<T>&) = delete;
+
+       uniq<T>& operator=(const uniq<T>&) = delete;
+
+       ~uniq() { delete _elem; }
+
+       friend uniq<T> make_uniq<>(T elem);
+
+     private:
+       T* _elem;
+     };
+
+     template<typename T>
+     uniq<T>
+     make_uniq(T elem)
+     {
+       uniq<T> a;
+       a._elem = new T(elem);
+       return a;
+     }
+
 
 * What are the differences between ``std::map`` and ``std::unordered_map``?
   (Tellence)
@@ -491,7 +553,7 @@ C/C++
        base.deadmaus();
      }
 
-  Fix it by inheriting virtually.
+  * Fix it by inheriting virtually.
 
 
 * `Polymorphic behaviour - Inheritance vs Composition
@@ -561,19 +623,20 @@ C/C++
 
   * Near pointers
 
-    > are 16-bit offsets within the reference segment, i.e. DS for data and CS for code. They are the fastest pointers, but are limited to point to 64 KB of memory (to the associated segment of the data type). Near pointers can be held in registers (typically SI and DI).
+      are 16-bit offsets within the reference segment, i.e. DS for data and CS for code. They are the fastest pointers, but are limited to point to 64 KB of memory (to the associated segment of the data type). Near pointers can be held in registers (typically SI and DI).
 
   * Far pointers
 
-    > are 32-bit pointers containing a segment and an offset. To use them the segment register ES is used by using the instruction les [reg]|[mem],dword [mem]|[reg]. They may reference up to 1024 KiB of memory. Note that pointer arithmetic (addition and subtraction) does not modify the segment portion of the pointer, only its offset. Operations which exceed the bounds of zero or 65535 (0xFFFF) will undergo modulo 64K operation just as any normal 16-bit operation. The moment counter becomes (0x10000), the resulting absolute address will roll over to 0x5000:0000.
+      are 32-bit pointers containing a segment and an offset. To use them the segment register ES is used by using the instruction les [reg]|[mem],dword [mem]|[reg]. They may reference up to 1024 KiB of memory. Note that pointer arithmetic (addition and subtraction) does not modify the segment portion of the pointer, only its offset. Operations which exceed the bounds of zero or 65535 (0xFFFF) will undergo modulo 64K operation just as any normal 16-bit operation. The moment counter becomes (0x10000), the resulting absolute address will roll over to 0x5000:0000.
 
   * Huge Pointers
 
-    > are essentially far pointers, but are (mostly) normalized every time they are modified so that they have the highest possible segment for that address. This is very slow but allows the pointer to point to multiple segments, and allows for accurate pointer comparisons, as if the platform were a flat memory model: It forbids the aliasing of memory as described above, so two huge pointers that reference the same memory location are always equal.
+      are essentially far pointers, but are (mostly) normalized every time they are modified so that they have the highest possible segment for that address. This is very slow but allows the pointer to point to multiple segments, and allows for accurate pointer comparisons, as if the platform were a flat memory model: It forbids the aliasing of memory as described above, so two huge pointers that reference the same memory location are always equal.
 
 * Is it legal for a method to call ``delete this;``? (Luxoft)
 
   * Valid if object was created using ``new``.
+
   * Undefined otherwise.
 
 * What is the order for evaluating function arguments in C++? (Luxoft)
@@ -583,7 +646,6 @@ C/C++
 * Memory leak using smart pointers (Luxoft)
 
   .. code-block:: cpp
-
 
      auto ptr = std::make_unique<int>(10);
      auto raw = ptr.release();
@@ -628,11 +690,11 @@ C/C++
 
 * What's the meaning of const keyword at the end of a function? (Luxoft - Harman)
 
-  A const function, denoted with the keyword ``const`` after a function
-  declaration, makes it a compiler error for this class function to
-  change a member variable of the class.
-  However, reading of a class variables is okay inside of the function,
-  but writing inside of this function will generate a compiler error.
+    A const function, denoted with the keyword ``const`` after a function
+    declaration, makes it a compiler error for this class function to
+    change a member variable of the class.
+    However, reading of a class variables is okay inside of the function,
+    but writing inside of this function will generate a compiler error.
 
 * What's the output of this ?  (Luxoft - Harman)
 
@@ -640,7 +702,7 @@ C/C++
 
      std::cout << 25u - 50;
 
-  *  2^32 - 25
+  *  `2^32 - 25`
 
      * The expression causes an *integer wraparound* when we try to subtract
        a number from an unsigned of value zero, practically obtaining
@@ -809,8 +871,8 @@ Code Review
     modifying its value we could be using two different values.
 
     * dereference only once in a temporary and square that.
-    * alter the prototype to accept a value, not a pointer.
 
+    * alter the prototype to accept a value, not a pointer.
 
 
   .. code-block:: c
@@ -830,7 +892,6 @@ Code Review
 * Tellence
 
   .. code-block:: cpp
-
 
      #include "defs.h"
      #include <stdio.h>
