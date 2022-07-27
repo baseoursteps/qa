@@ -881,11 +881,13 @@ Code Review
      f(uint8_t val)
      {
        if (val >= 128) {
-         return val - 128;
+         val - 128;
+       } else {
+         return val;
        }
      }
 
-  * We can optimize it by doing ``val &= ~(1 << 8)``.
+  * We can optimize it by doing ``val &= ~(1 << 7)``.
 
 
 
