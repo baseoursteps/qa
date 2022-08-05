@@ -603,6 +603,113 @@ C/C++
        return sum;
      }
 
+* Write a template that takes a type and a number and generates number-times pointer to type. (Tremend)
+
+  .. code-block:: cpp
+
+     template<typename T, size_t N>
+     struct MyStruct
+     {
+         using type = typename MyStruct<T *, N - 1>::type;
+     };
+     
+     template<typename T>
+     struct MyStruct<T, 0>
+     {
+         using type = T;
+     };
+     
+     int
+     main()
+     {
+         // write a template with the following property
+         MyStruct<int, 2>::type   i; // generates an int ** variable named i
+         MyStruct<float, 1>::type f; // generates a float * variable named f
+     }
+
+* Populate a binary tree given two rules then find element in tree
+
+  .. code-block:: cpp
+
+     struct Tree
+     {
+         using Node = Tree *;
+     
+         Node left {}, right {};
+         int  val;
+     
+         Tree(int val) : val(val) {}
+     
+     };
+     
+     struct Solution
+     {
+         Tree *root {};
+     
+         void
+         dt(Tree *current, int value)
+         {
+             if (!current) {
+                 return;
+             } else {
+                 current->val = value;
+                 dt(current->left, 2 * value + 1);
+                 dt(current->right, 2 * value + 2);
+             }
+         }
+     
+         // given the root of another tree, save that pointer locally and update it
+         // using the following rules:
+         // root->value = 0;
+         // left        = 2 * parent->val + 1;
+         // right       = 2 * parent->val + 2;
+         void
+         populate(Tree *other)
+         {
+             root = other;
+             dt(root, 0);
+         }
+     
+         //    0
+         //  1    2
+         //     5   6
+         //
+         bool
+         contains(int val)
+         {
+             if (!root)
+                 return false;
+     
+             vector<bool> path;
+     
+             while (val) {
+                 if (val % 2) {
+                     path.push_back(false);
+                     val = (val - 1) / 2;
+                 } else {
+                     path.push_back(true);
+                     val = (val - 2) / 2;
+                 }
+             }
+     
+             auto tmp = root;
+             for (auto it = path.rbegin(); it != path.rend() && tmp; ++it) {
+                 if (*it == true) {
+                     tmp = tmp->right;
+                 } else {
+                     tmp = tmp->left;
+                 }
+             }
+     
+             if (!tmp) {
+                 return false;
+             } else {
+                 return true;
+             }
+         }
+     };
+
+
 * Pointer arithmethic (Luxoft/NXP)
 
   * ``int *a = 0; a++; printf("%p\n", a)``
@@ -873,6 +980,32 @@ Code Review
     * dereference only once in a temporary and square that.
 
     * alter the prototype to accept a value, not a pointer.
+
+
+  .. code-block:: cpp
+
+     class A
+     {
+     public:
+         void f() { cout << "Text\n"; }
+         void g() { cout << x << "\n"; }
+         int x;
+     };
+     
+     int
+     main()
+     {
+         A *a;
+         a->f();
+         a->g();
+     }
+
+  * Undefined behaviour because ``a`` is used uninitialized
+
+  * Although ``f()`` will work because it's not accesing any class members
+
+  * Method ``g()`` will either print garbage or segfault
+
 
 
   .. code-block:: c
