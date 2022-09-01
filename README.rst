@@ -310,12 +310,64 @@ Algorithms
   <https://www.geeksforgeeks.org/add-two-numbers-without-using-arithmetic-operators>`_
   (Luxoft)
 
+* Given a binary tree with the following format write a method that finds the
+  most recent common ancestor
+
+  .. code-block:: cpp
+
+     struct Node
+     {
+         Node *parent; // nullptr for root
+     };
+
+  ::
+
+    //      1
+    //     / \
+    //    2   3
+    //   / \   \
+    //  4   5   6
+    //     / \
+    //    7   8
+    //
+    //   5 & 6 -> 1
+    //   4 & 8 -> 2
+    //   7 & 8 -> 5
+
+
+  .. code-block:: cpp
+
+     Node *
+     getMostRecentCommonAncestor(Node *first, Node *second)
+     {
+         if (!(first && second)) {
+             return {};
+         }
+
+         std::unordered_set<Node *> parents;
+
+         while (first) {
+             parents.insert(first->parent);
+             first = first->parent;
+         }
+
+         while (second) {
+             auto parent = second->parent;
+             if (parents.count(parent)) {
+                 return parent;
+             }
+             parents.insert(parent);
+             second = parent;
+         }
+
+         return {};
+     }
 
 
 C/C++
 =====
 
-* Can a virtual function be called from a constructor? (Ixia)
+* Can a virtual function be called from a constructor? (Ixia/Harman)
 
     The virtual call mechanism is disabled in constructors and destructors.
 
@@ -327,7 +379,7 @@ C/C++
     `vtable` cannot point to overridden methods from classes which have not been
     created.
 
-* Can you throw an exception from a destructor? (Ixia)
+* Can you throw an exception from a destructor? (Ixia/Harman)
 
     Before C++11 it was possible to do it, but there were high risks of triggering
     an abort. If a random exception was triggered at runtime and during stack
@@ -612,13 +664,13 @@ C/C++
      {
          using type = typename MyStruct<T *, N - 1>::type;
      };
-     
+
      template<typename T>
      struct MyStruct<T, 0>
      {
          using type = T;
      };
-     
+
      int
      main()
      {
@@ -634,18 +686,18 @@ C/C++
      struct Tree
      {
          using Node = Tree *;
-     
+
          Node left {}, right {};
          int  val;
-     
+
          Tree(int val) : val(val) {}
-     
+
      };
-     
+
      struct Solution
      {
          Tree *root {};
-     
+
          void
          dt(Tree *current, int value)
          {
@@ -657,7 +709,7 @@ C/C++
                  dt(current->right, 2 * value + 2);
              }
          }
-     
+
          // given the root of another tree, save that pointer locally and update it
          // using the following rules:
          // root->value = 0;
@@ -669,7 +721,7 @@ C/C++
              root = other;
              dt(root, 0);
          }
-     
+
          //    0
          //  1    2
          //     5   6
@@ -679,9 +731,9 @@ C/C++
          {
              if (!root)
                  return false;
-     
+
              vector<bool> path;
-     
+
              while (val) {
                  if (val % 2) {
                      path.push_back(false);
@@ -691,7 +743,7 @@ C/C++
                      val = (val - 2) / 2;
                  }
              }
-     
+
              auto tmp = root;
              for (auto it = path.rbegin(); it != path.rend() && tmp; ++it) {
                  if (*it == true) {
@@ -700,7 +752,7 @@ C/C++
                      tmp = tmp->left;
                  }
              }
-     
+
              if (!tmp) {
                  return false;
              } else {
@@ -795,7 +847,7 @@ C/C++
        funky(std::move(s)); // s is rval& => T = SomeStruct&& / t = SomeStruct&& &&
      }
 
-* What's the meaning of const keyword at the end of a function? (Luxoft - Harman)
+* What's the meaning of const keyword at the end of a function? (Luxoft,Harman)
 
     A const function, denoted with the keyword ``const`` after a function
     declaration, makes it a compiler error for this class function to
@@ -803,7 +855,7 @@ C/C++
     However, reading of a class variables is okay inside of the function,
     but writing inside of this function will generate a compiler error.
 
-* What's the output of this ?  (Luxoft - Harman)
+* What's the output of this ?  (Luxoft,Harman)
 
   .. code-block:: cpp
 
@@ -815,7 +867,7 @@ C/C++
        a number from an unsigned of value zero, practically obtaining
        ``UNSIGNED_MAX - value``.
 
-* How many times will this loop execute?  (Luxoft - Harman)
+* How many times will this loop execute?  (Luxoft,Harman)
 
   .. code-block:: cpp
 
@@ -833,8 +885,225 @@ C/C++
       value which, after reaching 255, will overflow (so it will go back to 0)
       and the loop will therefore go on forever.
 
+* What's the output of this code? Does it differ on 32 v 64 bit? (Harman)
+
+  .. code-block:: cpp
+
+     struct S
+     {
+         int32_t a, b;
+     };
+
+     int
+     main()
+     {
+         int32_t a = 1; // top of stack - 4
+         int32_t b = 3; // top of stack
+
+         S *s = reinterpret_cast<S *>(&a); // we get a's adress
+         std::cout << s->b; // and we print the second int32 in the struct
+     }
+
+  - the output should be ``3`` if we don't take into consideration optimizations
+  - when using clang or ``-O3`` it spews garbage so i guess we're doing something
+    fishy here -- but what?
+  - there is no difference between 32 and 64 bit (??)
+
+* Discussion around exceptions (Harman)
+
+  * When would you use them
+
+    Constructors, or scenarios where one cannot return an error code
+    or signal somehow else that the function did not execute correctly
+
+  * What are some alternatives
+
+    .. code-block:: cpp
+
+       std::optional<int>
+       getA()
+       {
+           return {}; // for error -- not too descriptive
+       }
+
+       std::variant<int, runtime_error>
+       getB()
+       {
+           return { std::runtime_error("some problem") }; // for error
+       }
+
+       std::tuple<int, int>
+       getC()
+       {
+           return { {}, 10 }; // where the first value is the correct value, and the
+                              // second is the error if any
+       }
+
+
+  * What are some disadvantages?
+
+    - if there's no ``catch`` block your code will crash the application
+    - if our methods throw inside a destructor we might trigger an abort,
+      or end up with memory leaks
+    - there are also considerations regarding performance -- exceptions are
+      rather costly
+
+  * How can you generate a memory leak using exceptions
+
+    .. code-block:: cpp
+
+       void
+       leak1()
+       {
+           throw new int { 10 };
+           // it's bad behaviour to throw heap allocated exceptions
+           // you can correct this by catching an int* and calling delete on it
+       }
+
+       void
+       leak2()
+       {
+           auto a = new int {};
+           throw "leak";
+
+           // one should use smart pointers whenever possible
+           // or use a local try-catch block and delete elements in the catch --
+           // error-prone
+       }
+
+
+* What is the name of the technique when one acquires resources upon construction
+  and releases them when destructing? (Harman)
+
+  RAII - Resource Acquisition Is Initialization
+
+* Write a template function that return the size of the template parameter (Harman)
+
+  .. code-block:: cpp
+
+     template<typename T>
+     size_t
+     size()
+     {
+         return sizeof(T);
+     }
+
+     
+  - How can you make it return ``0`` for double -- using template specialization
+  
+    .. code-block:: cpp
+  
+       template<>
+       size_t
+       size<double>()
+       {
+           return 0;
+       }
+
+* Given the following snippet, fix it to meet the requirements (Harman)
+
+  .. code-block:: cpp
+
+     void
+     run(char c)
+     {
+         while (true) {
+             std::cout << c;
+         }
+     }
+
+     int
+     main()
+     {
+         std::thread first(&run, 'a');
+         std::thread second(&run, 'b');
+         std::thread third(&run, 'c');
+         third.join();
+         return 0;
+     }
+
+  - Expected output of the program is: abcabcabcabc...
+  - Each symbol (a,b,c) must be printed from different thread
+  - Each thread must run them same ``run`` function
+  - The signature of the ``run`` may vary from initial one
+  - Number of threads and symbols will increase in the future
+
+
+  .. code-block:: cpp
+
+     void
+     run(char c, size_t current)
+     {
+         static std::mutex               m;
+         static std::condition_variable  cv;
+         static std::atomic<std::size_t> self {}, limit {};
+
+         limit++;
+
+         while (true) {
+             {
+                 std::unique_lock<mutex> lk(m);
+                 cv.wait(lk, [&] {
+                     return self == current;
+                 });
+                 std::cout << c;
+                 self = (self + 1) % limit;
+             }
+             cv.notify_all();
+         }
+     }
+
+     int
+     main()
+     {
+         std::vector<std::thread> threads;
+
+         threads.emplace_back(&run, 'a', 0);
+         threads.emplace_back(&run, 'b', 1);
+         threads.emplace_back(&run, 'c', 2);
+         threads.emplace_back(&run, 'd', 3);
+
+         threads.back().join();
+
+         return 0;
+     }
+
+
+
+
+
 Code Review
 ===========
+
+* Harman
+
+  .. code-block:: cpp
+
+     struct S
+     {
+         int a;
+     };
+
+     int
+     main()
+     {
+         double a = 2.6;
+         int    b = static_cast<int>(a);
+         S      c { b };
+
+         int d = static_cast<int>(c);
+         std::cout << b << ' ' << d;
+     }
+
+  - The code won't compile because you cannot cast a structure to a primitive without
+    implementing a conversion operator such as:
+
+    .. code-block:: cpp
+
+       operator int()
+       {
+           return a;
+       }
 
 * Societe Generale
 
@@ -991,7 +1260,7 @@ Code Review
          void g() { cout << x << "\n"; }
          int x;
      };
-     
+
      int
      main()
      {
