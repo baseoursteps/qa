@@ -363,6 +363,54 @@ Algorithms
          return {};
      }
 
+*  Given a string that contains alphanumeric characters, dashes, and spaces
+   format it so that it ends up as groups of three characters followed
+   by a space. The last group can have two or three characters. If the last
+   group has just one character transform the last two groups of three and one
+   in two groups of two and two. (Arista Networks)
+
+   ::
+
+     "ABAHDB --- 12843 -"  -> "ABA HDB 128 43"
+     "AB--AHDB - 128430 -" -> "ABA HDB 128 430"
+     "AB--AHDB - 1284 -"   -> "ABA HDB 12 84"
+
+   .. code-block:: cpp
+
+      string
+      FormatString(string s)
+      {
+          stringstream ss, rez;
+
+          for (auto c : s) {
+              if (isalnum(c)) {
+                  ss << c;
+              }
+          }
+
+          string end;
+          size_t endpos {};
+
+          if (ss.str().size() > 3 && ss.str().size() % 3 == 1) {
+              endpos = 4;
+              end    = ss.str().substr(ss.str().size() - endpos, string::npos);
+          }
+
+          for (size_t i = 0; i < ss.str().size() - endpos; ++i) {
+              rez << ss.str()[i];
+              if ((i + 1) % 3 == 0) {
+                  rez << " ";
+              }
+          }
+
+          if (end.size()) {
+              rez << end[0] << end[1] << " " << end[2] << end[3];
+          }
+
+          return rez.str();
+      }
+
+
 
 C/C++
 =====
@@ -485,6 +533,7 @@ C/C++
     Insert    O(1)             O(log n)
     Delete    O(1)             O(log n)
     ======    ===========    ============
+
 
 * Implement a singly-linked list with add/delete/contains.(Ixia)
 
@@ -988,11 +1037,11 @@ C/C++
          return sizeof(T);
      }
 
-     
+
   - How can you make it return ``0`` for double -- using template specialization
-  
+
     .. code-block:: cpp
-  
+
        template<>
        size_t
        size<double>()
@@ -1067,8 +1116,6 @@ C/C++
 
          return 0;
      }
-
-
 
 
 
