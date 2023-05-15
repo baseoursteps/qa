@@ -190,6 +190,45 @@ Operating Systems
 Algorithms
 ==========
 
+* Write a function that takes a positive integer N and counts all the numbers
+  that raised to the power of N have exactly N digits. (Teramind)
+
+  .. code-block:: cpp
+
+     int
+     count_digits(int num)
+     {
+         int ct {};
+         while (num) {
+             ++ct;
+             num /= 10;
+         }
+         return ct;
+     }
+     
+     int
+     find_integers(int n)
+     {
+         int count {};
+         int x { 1 };
+     
+         while (true) {
+             int power  = std::pow(x, n);
+             int digits = count_digits(power);
+     
+             if (digits == n) {
+                 count++;
+             } else if (digits > n) {
+                 break;
+             }
+     
+             x++;
+         }
+     
+         return count;
+     }
+                  
+
 * Remove all the odd numbers from a vector in place O(N). (Societe Generale)
 
   .. code-block:: cpp
