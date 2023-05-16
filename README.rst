@@ -190,6 +190,89 @@ Operating Systems
 Algorithms
 ==========
 
+* Implement ``strcmp``. (Arista)
+
+  .. code-block:: cpp
+
+     int
+     my_strcmp(const char *s1, const char *s2)
+     {
+         while (*s1 || *s2) {
+             if (*s1 < *s2) {
+                 return -1;
+             } else if (*s1 > *s2) {
+                 return 1;
+             }
+             s1++;
+             s2++;
+         }
+         return 0;
+     }
+
+
+
+* Merge two sorted linked lists (Arista)
+
+  .. code-block:: cpp
+
+     struct node
+     {
+         struct node *next;
+         int          val;
+     };
+
+     node *
+     merge(struct node *a, struct node *b)
+     {
+         struct node head = { 0 }, *it = &head;
+
+         while (a && b) {
+             if (a->val < b->val) {
+                 it->next = a;
+                 a        = a->next;
+             } else {
+                 it->next = b;
+                 b        = b->next;
+             }
+             it = it->next;
+         }
+
+         if (a) {
+             it->next = a;
+         } else if (b) {
+             it->next = b;
+         }
+
+         return head.next;
+     }
+
+
+
+* You are given a sorted array of N-1 positive integers from 1 to N-1. Find the
+  missing integer in O(logn). (Arista)
+
+  .. code-block:: cpp
+
+     int
+     find(int *arr, size_t sz)
+     {
+         size_t left  = 0;
+         size_t right = sz - 1;
+
+         while (left < right) {
+             size_t mid = left + (right - left) / 2;
+
+             if (arr[mid] - arr[0] == mid)
+                 left = mid + 1;
+             else
+                 right = mid;
+         }
+
+         return arr[left] - 1;
+     }
+
+
+
 * Write a function that takes a positive integer N and counts all the numbers
   that raised to the power of N have exactly N digits. (Teramind)
 
@@ -205,29 +288,29 @@ Algorithms
          }
          return ct;
      }
-     
+
      int
      find_integers(int n)
      {
          int count {};
          int x { 1 };
-     
+
          while (true) {
              int power  = std::pow(x, n);
              int digits = count_digits(power);
-     
+
              if (digits == n) {
                  count++;
              } else if (digits > n) {
                  break;
              }
-     
+
              x++;
          }
-     
+
          return count;
      }
-                  
+
 
 * Remove all the odd numbers from a vector in place O(N). (Societe Generale)
 
