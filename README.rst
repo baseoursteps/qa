@@ -190,6 +190,95 @@ Operating Systems
 Algorithms
 ==========
 
+* You are given a matrix consisting of leaves represented by positive integers and a string of
+  wind directions. Any of the four directions moves the leaves one position. Once any leaf is out,
+  an opposite wind won't bring it back. Write an algorithm that computes the number of remaining leaves
+  after a series of wind gusts. (Gameloft) Example:
+
+  ::
+
+     1 0 0 0
+     2 0 2 0
+     0 1 1 0
+     0 0 0 0
+
+     RRDD -> 3
+     LLLL -> 0
+     RRLL -> 4
+     UULL -> 1
+
+  .. code-block:: cpp
+
+     int
+     count_leaves(std::vector<std::vector<int>> grid, std::string winds)
+     {
+         ssize_t max_right {}, max_left {}, max_up {}, max_down {};
+         ssize_t cur_up {}, cur_left {};
+
+         const size_t height = grid.size();
+         const size_t width  = grid.front().size();
+
+         for (auto w : winds) {
+             if (w == 'L') {
+                 ++cur_left;
+                 if (cur_left > max_left) {
+                     max_left = cur_left;
+                     if (max_left == width)
+                         return 0;
+                 }
+             }
+             if (w == 'R') {
+                 --cur_left;
+                 if (-cur_left > max_right) {
+                     max_right = -cur_left;
+                     if (max_right == width)
+                         return 0;
+                 }
+             }
+             if (w == 'U') {
+                 ++cur_up;
+                 if (cur_up > max_up) {
+                     max_up = cur_up;
+                     if (max_up == height)
+                         return 0;
+                 }
+             }
+             if (w == 'D') {
+                 --cur_up;
+                 if (-cur_up > max_down) {
+                     max_down = -cur_up;
+                     if (max_down == height)
+                         return 0;
+                 }
+             }
+         }
+
+         for (size_t i = 0; i < height; ++i) {
+             for (size_t j = 0; j < width; ++j) {
+                 if (j < max_left)
+                     grid.at(i).at(j) = 0;
+
+                 if (j >= width - max_right)
+                     grid.at(i).at(j) = 0;
+
+                 if (i < max_up)
+                     grid.at(i).at(j) = 0;
+
+                 if (i >= height - max_down)
+                     grid.at(i).at(j) = 0;
+             }
+         }
+
+         size_t res {};
+         for (size_t i = 0; i < height; ++i)
+             for (size_t j = 0; j < width; ++j)
+                 res += grid.at(i).at(j);
+
+         return res;
+     }
+
+
+
 * Implement ``strcmp``. (Arista)
 
   .. code-block:: cpp
@@ -536,6 +625,19 @@ Algorithms
 
 C/C++
 =====
+
+* What operators cannot be overloaded? (Gameloft)
+
+  * `::`     -- Scope Resolution Operator
+  * `?:`     -- Ternary or Conditional Operator
+  * `.`      -- Member Access or Dot operator
+  * `.*`     -- Pointer-to-member Operator
+  * `sizeof` -- Object size Operator
+  * `typeid` -- Object type Operator (typeid)
+  * `static_cast`
+  * `const_cast`
+  * `reinterpret_cast`
+  * `dynamic_cast`
 
 * Can a virtual function be called from a constructor? (Ixia/Harman)
 
