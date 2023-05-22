@@ -626,18 +626,82 @@ Algorithms
 C/C++
 =====
 
+* Given two processes ``X`` and ``Y`` that share memory between them we have the scenario in the block of code.
+  What method shall ``Y`` invoke? What is the resulting behaviour and why? (FluentTech)
+
+    Process ``Y`` will almost certainly crash because the ``vtable`` pointer shall reference
+    memory from process ``X``'s adress space.
+
+  .. code-block:: cpp
+
+     class A
+     {
+     public:
+         virtual void f()
+         {
+          //...
+         }
+     };
+
+     class B : public A
+     {
+     public:
+         void f()
+         {
+          //...
+         }
+     };
+
+     class C : public A
+     {
+     public:
+         void f()
+         {
+          //...
+         }
+     };
+
+     // Process X
+     int main()
+     {
+         B *b = new (pointer_in_shared_memory_space) B;
+         b->f();
+     }
+
+     // Process Y
+     int
+     main()
+     {
+         A *shared_a = static_cast<A *>(pointer_in_shared_memory_space);
+         shared_a->f();
+     }
+
+
+* Given a matrix of N by N elements and two methods that compute the sum of the elements,
+  one by rows, other by columns can we assume that the sums will be equal? Which method should
+  be faster? (FluentTech)
+
+    The behaviour for signed integer and floating point is undefined, so we can't make any
+    safe assumptions.
+
+    For unsigned integer the sum will be the same.
+
+    The method that computes by line should be faster because contiguos memory is fetched
+    into the CPU cache.
+
+
 * What operators cannot be overloaded? (Gameloft)
 
-  * `::`     -- Scope Resolution Operator
-  * `?:`     -- Ternary or Conditional Operator
-  * `.`      -- Member Access or Dot operator
-  * `.*`     -- Pointer-to-member Operator
-  * `sizeof` -- Object size Operator
-  * `typeid` -- Object type Operator (typeid)
-  * `static_cast`
-  * `const_cast`
-  * `reinterpret_cast`
-  * `dynamic_cast`
+  * ``::``     -- Scope Resolution Operator
+  * ``?:``     -- Ternary or Conditional Operator
+  * ``.``      -- Member Access or Dot operator
+  * ``.*``     -- Pointer-to-member Operator
+  * ``sizeof`` -- Object size Operator
+  * ``typeid`` -- Object type Operator (typeid)
+  * ``static_cast``
+  * ``const_cast``
+  * ``reinterpret_cast``
+  * ``dynamic_cast``
 
 * Can a virtual function be called from a constructor? (Ixia/Harman)
 
@@ -648,7 +712,7 @@ C/C++
 
     Derived classes are constructed from the first derived class in chain to the
     last one. The problem is that when the first class is constructed its
-    `vtable` cannot point to overridden methods from classes which have not been
+    ``vtable`` cannot point to overridden methods from classes which have not been
     created.
 
 * Can you throw an exception from a destructor? (Ixia/Harman)
@@ -656,12 +720,12 @@ C/C++
     Before C++11 it was possible to do it, but there were high risks of triggering
     an abort. If a random exception was triggered at runtime and during stack
     unwinding an object would throw an exception from its destructor there would
-    be no `catch` block to handle this error, thus generating an abort.
+    be no ``catch`` block to handle this error, thus generating an abort.
 
-    Starting with C++11 all destructors are implictly declared as `noexcept`,
+    Starting with C++11 all destructors are implictly declared as ``noexcept``,
     automatically trigerring an abort.
 
-* Write a method that returns incremental `int` values without taking arguments.
+* Write a method that returns incremental ``int`` values without taking arguments.
   (Ixia)
 
   .. code-block:: cpp
@@ -1134,7 +1198,7 @@ C/C++
 
      std::cout << 25u - 50;
 
-  *  `2^32 - 25`
+  *  ``2^32 - 25``
 
      * The expression causes an *integer wraparound* when we try to subtract
        a number from an unsigned of value zero, practically obtaining
@@ -1604,7 +1668,7 @@ Code Review
     * Only one instance of the buffer regardless of how many threads
       call the function.
 
-  * If the buffer was declared `static` would the function be thread-safe?
+  * If the buffer was declared ``static`` would the function be thread-safe?
 
     * No
 
