@@ -190,6 +190,112 @@ Operating Systems
 Algorithms
 ==========
 
+* Explain the following function. (Arista)
+
+  The following method computes the sum of two integers without using arithmethic operations.
+  How it actually achieves that is a mystery...
+
+  .. code-block:: cpp
+
+     int myfun2(int x, int y)
+     {
+       if (y == 0)
+         return x;
+       else
+         return myfun2( x ^ y, (x & y) << 1);
+     }
+
+
+* Longest common subsequence of two strings in C. (Arista)
+
+  .. code-block:: cpp
+
+     int
+     max(int i, int j)
+     {
+         return i > j ? i : j;
+     }
+
+     int
+     lcs(const char *a, const char *b)
+     {
+         const size_t a_sz = strlen(a), b_sz = strlen(b);
+
+         int **info = (int **)calloc(a_sz + 1, sizeof *info);
+         for (size_t i = 0; i < a_sz + 1; ++i)
+             info[i] = (int *)calloc(b_sz + 1, sizeof **info);
+
+         for (size_t i = 0; i < a_sz; ++i)
+             for (size_t j = 0; j < b_sz; ++j)
+                 if (a[i] == b[j])
+                     info[i + 1][j + 1] = info[i][j] + 1;
+                 else
+                     info[i + 1][j + 1] = max(info[i][j + 1], info[i + 1][j]);
+
+         return info[a_sz][b_sz];
+     }
+
+
+
+* Given a node in a binary search tree return the next in-order node and define the structure
+  needed for the operation. (Arista)
+
+  .. code-block:: cpp
+
+     struct node
+     {
+         struct node *parent;
+         struct node *right;
+         struct node *left;
+         int          val;
+     };
+
+     struct node *
+     get_next_in_order(struct node *n)
+     {
+         if (n->right) {
+             n = n->right;
+             while (n) {
+                 n = n->left;
+             }
+         } else {
+             while (n->parent && n->parent->right == n) {
+                 n = n->parent;
+             }
+             n = n->parent;
+         }
+
+         return n;
+     }
+
+
+
+* Count the number of primes up to a given number N using the sieve of Erathosthenes. (Arista)
+
+  .. code-block:: cpp
+
+     size_t
+     count_primes(size_t bound)
+     {
+         vector<bool> primes(bound + 1);
+
+         size_t count { 1 };
+
+         for (size_t p = 2; p < bound;) {
+             for (size_t i = 2; i * p <= bound; ++i)
+                 primes.at(i * p) = true;
+
+             while (++p <= bound)
+                 if (!primes.at(p)) {
+                     ++count;
+                     break;
+                 }
+         }
+         return count;
+     }
+
+
+
 * You are given a matrix consisting of leaves represented by positive integers and a string of
   wind directions. Any of the four directions moves the leaves one position. Once any leaf is out,
   an opposite wind won't bring it back. Write an algorithm that computes the number of remaining leaves
