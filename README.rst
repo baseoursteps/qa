@@ -12,6 +12,12 @@ Contents
 Operating Systems
 =================
 
+* How can a process determine if it's running in virtual machine? (Ixia)
+
+  - `Testing the CPUID hypervisor present bit <https://kb.vmware.com/s/article/1009458>`_
+
+      Intel and AMD CPUs have reserved bit 31 of ECX of CPUID leaf 0x1 as the hypervisor present bit. This bit allows hypervisors to indicate their presence to the guest operating system. Hypervisors set this bit and physical CPUs (all existing and future CPUs) set this bit to zero. Guest operating systems can test bit 31 to detect if they are running inside a virtual machine.
+
 * Do threads have their own stack and why? (Ixia)
 
     Yes. The stack of each thread contains particular automatic lifetime data
@@ -1515,6 +1521,37 @@ C/C++
 
 Code Review
 ===========
+
+* Ixia
+
+  .. code-block:: c
+
+     Process A:
+     1  spin_lock(&list_lock);
+     2  if(list_empty(&list_head)) {
+     3      spin_unlock(&list_lock);
+     4      set_current_state(TASK_INTERRUPTIBLE);
+     5      schedule();
+     6      spin_lock(&list_lock);
+     7  }
+     8
+     9  /* Rest of the code ... */
+     10 spin_unlock(&list_lock);
+
+     Process B:
+     100  spin_lock(&list_lock);
+     101  list_add_tail(&list_head, new_node);
+     102  spin_unlock(&list_lock);
+     103  wake_up_process(processa_task);
+
+
+  - This is the `classic lost wake-up problem <https://www.linuxjournal.com/article/8144>`_ and is solved by
+    moving line 4 before line 1.
+
+      It may happen that after process A executes line 3 but before it executes line 4, process B is scheduled on another processor. In this timeslice, process B executes all its instructions, 100 through 103. Thus, it performs a wake-up on process A, which has not yet gone to sleep. Now, process A, wrongly assuming that it safely has performed the check for list_empty, sets the state to TASK_INTERRUPTIBLE and goes to sleep.
+      Thus, a wake up from process B is lost. This is known as the lost wake-up problem. Process A sleeps, even though there are nodes available on the list.
+
+
 
 * Harman
 
