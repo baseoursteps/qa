@@ -196,6 +196,178 @@ Operating Systems
 Algorithms
 ==========
 
+* Forex Network. (Stripe)
+
+  You are given an input string representing currency conversions rates in the following format:
+
+  ``"AUD:RON:2.99,AUD:HUF:237.65,USD:CAD:1.36,USD:RON:4.59,USD:JPY:151.167,RON:MDL:3.86,HUF:MDL:0.05,MDL:RUB:5.23"``
+
+  where in a tuple the first two elements are the currencies and the third is the rate at which if you sell
+  the ``first currency`` you would get ``rate`` number of ``second currency``.
+
+  I. Write a function which takes two currencies and prints the conversion rate between them.
+
+     e.g. ``f("AUD","RON") -> 2.99``
+
+  II. Modify the previous function so that if a direct conversion does not exist, one intermediate
+      currency can be used to obtain an exchange rate.
+
+      e.g. ``f("AUD","MDL") -> 237.65 * 0.05 = 11.882``
+
+  III. Modify the previous function so that if multiple intermediate currencies exist the smallest
+       rate is returned.
+
+       e.g ``f("AUD","MDL") -> 2.99 * 3.86 = 11.541``
+
+
+  IV. Modify the previous function so that any number of intermediate currencies can be used
+      to obtain an exchange rate.
+
+      e.g. ``f("AUD","RUB") -> 2.99 * 3.86 * 5.23 = 60.361``
+
+  .. code-block:: cpp
+
+     #include <algorithm>
+     #include <functional>
+     #include <iostream>
+     #include <queue>
+     #include <sstream>
+     #include <string>
+     #include <unordered_map>
+     #include <unordered_set>
+     #include <vector>
+
+     using namespace std;
+
+     class ForexNetwork
+     {
+         using rates = unordered_map<string, unordered_map<string, float>>;
+         rates rx;
+
+         rates
+         parse(string in)
+         {
+             rates r;
+
+             stringstream ss_in(in);
+             string       tuple;
+             while (getline(ss_in, tuple, ',')) {
+                 stringstream ss_tuple(tuple);
+                 string       from, to, val;
+                 getline(ss_tuple, from, ':');
+                 getline(ss_tuple, to, ':');
+                 ss_tuple >> val;
+
+                 r[from][to] = stof(val);
+                 r[to][from] = 1.0 / stof(val);
+             }
+
+             return r;
+         }
+
+         float
+         f1(string from, string to)
+         {
+             if (rx.count(from) && rx.at(from).count(to)) {
+                 return rx.at(from).at(to);
+             } else {
+                 return 0;
+             }
+         }
+
+         float
+         f2(string from, string to)
+         {
+             if (auto &&from_map = rx.find(from); from_map != rx.end()) {
+                 for (auto &&tmp_i : from_map->second) {
+                     if (rx.at(tmp_i.first).count(to)) {
+                         return rx.at(from).at(tmp_i.first) *
+                                rx.at(tmp_i.first).at(to);
+                     }
+                 }
+             }
+             return 0;
+         }
+
+         float
+         f3(string from, string to)
+         {
+             priority_queue<float, vector<float>, greater<float>> vals;
+
+             if (auto &&from_map = rx.find(from); from_map != rx.end()) {
+                 for (auto &&tmp_i : from_map->second) {
+                     if (rx.at(tmp_i.first).count(to)) {
+                         vals.push(rx.at(from).at(tmp_i.first) *
+                                   rx.at(tmp_i.first).at(to));
+                     }
+                 }
+             }
+
+             if (vals.empty()) {
+                 return 0;
+             } else {
+                 return vals.top();
+             }
+         }
+
+         float
+         f4(string from, string to, unordered_set<string> &visited)
+         {
+             if (visited.count(from)) {
+                 return 0;
+             }
+
+             visited.insert(from);
+             auto val = 0.0f;
+
+             if (rx.count(from) && rx.at(from).count(to)) {
+                 val = rx.at(from).at(to);
+             } else {
+                 if (auto &&from_map = rx.find(from); from_map != rx.end()) {
+                     for (auto &&tmp_i : from_map->second) {
+                         auto new_val = rx.at(from).at(tmp_i.first) *
+                                        f4(tmp_i.first, to, visited);
+
+                         if (new_val > 0 && val > 0) {
+                             val = min(val, new_val);
+                         } else if (new_val > 0) {
+                             val = new_val;
+                         }
+                     }
+                 }
+             }
+
+             visited.erase(from);
+             return val;
+         }
+
+     public:
+         ForexNetwork(string input) : rx(parse(input)) {}
+
+         float
+         f(string from, string to)
+         {
+             unordered_set<string> visited;
+             return f4(from, to, visited);
+         }
+     };
+
+     int
+     main()
+     {
+         auto input =
+             "AUD:RON:2.99,AUD:HUF:237.65,USD:CAD:1.36,USD:RON:4.59,USD:JPY:151.167,"
+             "RON:MDL:3.86,HUF:MDL:0.05,MDL:RUB:5.23";
+
+         ForexNetwork fx(input);
+
+         cout << fx.f("AUD", "RON") << "\n";
+         cout << fx.f("AUD", "MDL") << "\n";
+         cout << fx.f("AUD", "RUB") << "\n";
+     }
+
+
+
 * Explain the following function. (Arista)
 
   The following method computes the sum of two integers without using arithmethic operations.
